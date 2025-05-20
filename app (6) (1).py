@@ -207,17 +207,17 @@ else:
                 if "PROVEEDOR" in df_filtrado.columns and "ESTATUS DE USUARIO" in df_filtrado.columns:
                     tabla = df_filtrado.groupby(["PROVEEDOR", "ESTATUS DE USUARIO"]).size().unstack(fill_value=0)
                     tabla["TOTAL"] = tabla.sum(axis=1)
-                    vis_cols = [col for col in tabla.columns if "VIS" in col]
+                    vis_cols = [col for col in tabla.columns if "VISA" in col]
                     auto_cols = [col for col in tabla.columns if "AUTO" in col]
                     aten_cols = [col for col in tabla.columns if "ATEN" in col]
                     # Calcula solo si hay datos
                     tabla["% VISA"] = tabla[vis_cols].sum(axis=1) / tabla["TOTAL"] * 100 if vis_cols else 0
                     tabla["% AUTO"] = tabla[auto_cols].sum(axis=1) / tabla["TOTAL"] * 100 if auto_cols else 0
                     tabla["% ATEN"] = tabla[aten_cols].sum(axis=1) / tabla["TOTAL"] * 100 if aten_cols else 0
-                    tabla["% Cumplimiento (Visa+Auto)"] = tabla["% VISADO"] + tabla["% AUTO"]
+                    tabla["% Cumplimiento (Visa+Auto)"] = tabla["% VISA"] + tabla["% AUTO"]
                     tabla["Cumple Meta"] = ((tabla["% Cumplimiento (Visa+Auto)"] >= 85) & (tabla["% ATEN"] <= 15)).map({True: "✅", False: "❌"})
                     # Filtra las columnas que existan realmente
-                    cols_show = [c for c in ["% VISADO", "% AUTO", "% ATEN", "% Cumplimiento (Visa+Auto)", "Cumple Meta"] if c in tabla.columns]
+                    cols_show = [c for c in ["% VISA", "% AUTO", "% ATEN", "% Cumplimiento (Visa+Auto)", "Cumple Meta"] if c in tabla.columns]
                     if len(cols_show) > 1:  # Hay algo que mostrar
                         st.dataframe(tabla[cols_show].round(2))
                     else:
