@@ -202,30 +202,31 @@ else:
                     )
                     st.plotly_chart(fig_dia, use_container_width=True)
 
-            with tabs[3]:
-                st.subheader("🎯 Evaluación de cumplimiento por estatus de usuario")
-            
-                if "PROVEEDOR" in df_filtrado.columns and "ESTATUS DE USUARIO" in df_filtrado.columns and not df_filtrado.empty:
-                    tabla = df_filtrado.groupby(["PROVEEDOR", "ESTATUS DE USUARIO"]).size().unstack(fill_value=0)
-                    tabla["TOTAL"] = tabla.sum(axis=1)
-            
-                    # Identificar posibles columnas
-                    vis_cols = [col for col in tabla.columns if "VISA" in col]
-                    auto_cols = [col for col in tabla.columns if "AUTO" in col]
-                    aten_cols = [col for col in tabla.columns if "ATEN" in col]
-            
-                    tabla["% VISA"] = tabla[vis_cols].sum(axis=1) / tabla["TOTAL"] * 100 if vis_cols else 0
-                    tabla["% AUTO"] = tabla[auto_cols].sum(axis=1) / tabla["TOTAL"] * 100 if auto_cols else 0
-                    tabla["% ATEN"] = tabla[aten_cols].sum(axis=1) / tabla["TOTAL"] * 100 if aten_cols else 0
-                    tabla["% Cumplimiento (Visa+Auto)"] = tabla["% VISADO"] + tabla["% AUTO"]
-                    tabla["Cumple Meta"] = ((tabla["% Cumplimiento (Visa+Auto)"] >= 85) & (tabla["% ATEN"] <= 15)).map({True: "✅", False: "❌"})
-            
-                    # Muestra solo las columnas que realmente existen en la tabla
-                    cols_show = [c for c in ["% VISA", "% AUTO", "% ATEN", "% Cumplimiento (Visa+Auto)", "Cumple Meta"] if c in tabla.columns]
-                    if any(tabla["TOTAL"] > 0) and len(cols_show) > 1:
-                        st.dataframe(tabla[cols_show].round(2))
+             with tabs[3]:
+                    st.subheader("🎯 Evaluación de cumplimiento por estatus de usuario")
+                
+                    if "PROVEEDOR" in df_filtrado.columns and "ESTATUS DE USUARIO" in df_filtrado.columns and not df_filtrado.empty:
+                        tabla = df_filtrado.groupby(["PROVEEDOR", "ESTATUS DE USUARIO"]).size().unstack(fill_value=0)
+                        tabla["TOTAL"] = tabla.sum(axis=1)
+                
+                        vis_cols = [col for col in tabla.columns if "VIS" in col]
+                        auto_cols = [col for col in tabla.columns if "AUTO" in col]
+                        aten_cols = [col for col in tabla.columns if "ATEN" in col]
+                
+                        tabla["% VISADO"] = tabla[vis_cols].sum(axis=1) / tabla["TOTAL"] * 100 if vis_cols else 0
+                        tabla["% AUTO"] = tabla[auto_cols].sum(axis=1) / tabla["TOTAL"] * 100 if auto_cols else 0
+                        tabla["% ATEN"] = tabla[aten_cols].sum(axis=1) / tabla["TOTAL"] * 100 if aten_cols else 0
+                
+                        # Solo calcular y mostrar meta si existen columnas requeridas
+                        show_cols = []
+                        if "% VISADO" in tabla.columns and "% AUTO" in tabla.columns and "% ATEN" in tabla.columns:
+                            tabla["% Cumplimiento (Visa+Auto)"] = tabla["% VISADO"] + tabla["% AUTO"]
+                            tabla["Cumple Meta"] = ((tabla["% Cumplimiento (Visa+Auto)"] >= 85) & (tabla["% ATEN"] <= 15)).map({True: "✅", False: "❌"})
+                            show_cols = ["% VISADO", "% AUTO", "% ATEN", "% Cumplimiento (Visa+Auto)", "Cumple Meta"]
+                
+                        if len(show_cols) > 0:
+                            st.dataframe(tabla[show_cols].round(2))
+                        else:
+                            st.info("No existen estatus suficientes para evaluar el cumplimiento en los datos filtrados.")
                     else:
-                        st.info("No existen estatus suficientes para evaluar el cumplimiento en los datos filtrados.")
-                else:
-                    st.warning("No se encontraron datos suficientes o las columnas necesarias no están disponibles.")
-
+                        st.warning("No se encontraron datos suficientes o las columnas necesarias no están disponibles.")
