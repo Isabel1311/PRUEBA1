@@ -211,7 +211,7 @@ else:
                     auto_cols = [col for col in tabla.columns if "AUTO" in col]
                     aten_cols = [col for col in tabla.columns if "ATEN" in col]
                     # Calcula solo si hay datos
-                    tabla["% VISADO"] = tabla[vis_cols].sum(axis=1) / tabla["TOTAL"] * 100 if vis_cols else 0
+                    tabla["% VISA"] = tabla[vis_cols].sum(axis=1) / tabla["TOTAL"] * 100 if vis_cols else 0
                     tabla["% AUTO"] = tabla[auto_cols].sum(axis=1) / tabla["TOTAL"] * 100 if auto_cols else 0
                     tabla["% ATEN"] = tabla[aten_cols].sum(axis=1) / tabla["TOTAL"] * 100 if aten_cols else 0
                     tabla["% Cumplimiento (Visa+Auto)"] = tabla["% VISADO"] + tabla["% AUTO"]
