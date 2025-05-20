@@ -212,7 +212,7 @@ else:
                     cols_visado = [col for col in tabla.columns if "VISA" in col or "VISA" in col or "VISA" in col]
                     col_auto = [col for col in tabla.columns if "AUTO" in col]
                     col_aten = [col for col in tabla.columns if "ATEN" in col]
-                    tabla["% VISADO"] = tabla[cols_visado].sum(axis=1) / tabla["TOTAL"] * 100 if cols_visado else 0
+                    tabla["% VISA"] = tabla[cols_visado].sum(axis=1) / tabla["TOTAL"] * 100 if cols_visado else 0
                     tabla["% AUTO"] = tabla[col_auto].sum(axis=1) / tabla["TOTAL"] * 100 if col_auto else 0
                     tabla["% ATEN"] = tabla[col_aten].sum(axis=1) / tabla["TOTAL"] * 100 if col_aten else 0
                     tabla["% Cumplimiento (Visa+Auto)"] = tabla["% VISADO"] + tabla["% AUTO"]
